@@ -1,0 +1,185 @@
+
+--- CUSTOMERS WITH THE SAME ADDRESS
+SELECT c.first_name, c.last_name, b.first_name AS parner_name, c.address_id
+FROM customer c
+JOIN customer b
+ON c.customer_id=b.customer_id
+WHERE c.customer_id<>b.customer_id AND c.address_id=b.address_id
+
+---CUSTOMER WITH THE HIGHEST PAYMENT
+SELECT c.first_name, c.last_name, SUM(p.amount) AS total_payment
+FROM customer c
+JOIN payment p
+ON c.customer_id=p.customer_id
+GROUP BY 1,2
+ORDER BY total_payment DESC
+LIMIT 1
+
+---MOST RENTED FILM
+SELECT f.film_id, f.title
+COUNT (r.rental_id) AS rental_count
+FROM film f
+JOIN inventory i
+ON f.film_id=i.film_id
+JOIN rental r
+ON i.inventory_id=r.inventory_id
+GROUP BY f.film_id
+ORDER BY rental_count DESC
+LIMIT 1
+
+---FILMS THAT HAS BEEN RENTED SO FAR
+SELECT DISTINCT f.film_id, f.title movies
+FROM film f
+JOIN inventory i
+ON f.film_id=i.film_id
+JOIN rental r
+ON i.inventory_id=r.inventory_id
+WHERE r.rental_id IS NOT NULL
+GROUP BY 1,2
+
+---FILMS THAT HAS NOT BEEN RENTED SO FAR
+SELECT f.film_id, f.title movies,r.rental_id
+FROM film f
+LEFT JOIN inventory i
+ON f.film_id=i.film_id
+LEFT JOIN rental r
+ON i.inventory_id=r.inventory_id
+WHERE r.rental_id IS NULL
+GROUP BY 1,2,3
+
+---CUSTOMERS THAT HAS NOT RENTED ANY FILM
+SELECT c.first_name, c.last_name,r.rental_id
+FROM customer c
+FULL OUTER JOIN rental r
+ON c.customer_id=r.customer_id
+JOIN inventory i
+ON i.inventory_id=r.inventory_id
+JOIN inventory i
+ON f.film_id=i.film_id
+WHERE r.rental_id IS NULL
+GROUP BY 1,2,3
+
+----NUMBER OF TIMES EACH MOVIE HAS BEEN RENTED
+SELECT f.film_id, f.title movies, COUNT(r.rental_id) number_of_times_rented
+FROM rental r 
+JOIN inventory i
+ON i.inventory_id=r.inventory_id
+JOIN film f
+ON f.film_id=i.film_id 
+GROUP BY 1,2
+ORDER BY 1
+
+---ACTORS WITH THE NUMBER OF MOVIES ACTED IN
+SELECT a.actor_id, a.first_name, a.last_name, COUNT(f.film_id) number_of_movies_acted_in
+FROM film_actor fa
+JOIN film f
+ON fa.film_id=f.film_id
+JOIN actor a
+ON a.actor_Id=fa.actor_id
+GROUP BY 1,2
+ORDER BY 1
+
+---ACTORS THAT HAS ACTED IN MORE THAN 20 MOVIES
+SELECT a.actor_id, a.first_name, a.last_name
+FROM film_actor fa
+JOIN film f
+ON fa.film_id=f.film_id
+JOIN actor a
+ON a.actor_Id=fa.actor_id
+GROUP BY 1,2
+HAVING COUNT (f.film_id)>20
+ORDER BY 1
+
+---FILMS WIH PG RATING
+SELECT f.film_id, f.title movies,f.rating, COUNT(r.rental_id) number_of_times_rented
+FROM rental r 
+JOIN inventory i
+ON i.inventory_id=r.inventory_id
+JOIN film f
+ON f.film_id=i.film_id
+WHERE f.rating= 'PG'
+GROUP BY 1,2
+ORDER BY 1
+
+---MOVIES AVAILABLE ONLY IN STORE 1 AND NOT IN STORE 2
+SELECT f.title movies
+FROM film f
+WHERE f.film_id IN (SELECT i.film_id
+                    FROM inventory i
+                    WHERE i.store_id=1
+                    AND f.film_id NOT IN (SELECT i.film_id
+                                          FROM inventory i
+                                          WHERE i.store_id=2))
+
+--- SAME MOVIES AVAILABLE IN BOTH STORES
+SELECT f.title movies
+FROM film f
+WHERE f.film_id IN (SELECT i.film_id
+                    FROM inventory i
+                    WHERE i.store_id=1
+                    AND f.film_id IN (SELECT i.film_id
+                                      FROM inventory i
+                                      WHERE i.store_id=2))
+
+
+---TOTAL MOVIES IN BOTH STORES
+SELECT f.title movies
+FROM film f
+WHERE f.film_id IN (SELECT i.film_id
+                    FROM inventory i
+                    WHERE i.store_id=1
+                    OR f.film_id IN (SELECT i.film_id
+                                     FROM inventory i
+                                     WHERE i.store_id=2))
+
+---MOVIES WITH THE HIGHEST NUMBER OF RENTAGE
+SELECT f.film_id,f.itle movies,s.store_id,
+COUNT (f.film_id) AS Number _of_times_rented
+FROM store s
+JOIN inventory i
+ON s.store_id=i.store_id
+JOIN filmf
+ON f.film_id=i.film_id
+JOIN rental r
+ON r.inventory_id=i.inventory_id
+WHERE s.store_id=1
+GROUP BY 1,3
+ORDER BY Number _of_times_rented
+LIMIT 1
+
+---FILM RATING AND NUMBER OF TIMES THE MOVIES UNDER EACH RATING ARE RENTED
+SELECT f.rating,
+COUNT (r.rental_id) AS Number _of_times_rented
+FROM film f
+JOIN inventory i
+ON f.film_id=i.film_id
+JOIN rental r
+ON i.inventory_id=r.inventory_id
+GROUP BY 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
