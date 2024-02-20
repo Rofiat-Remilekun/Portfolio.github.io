@@ -1,4 +1,4 @@
-- 👋 Hi, I’m Rofiat-Remilekun
+- 👋 Hi, I’m Rofiat Remilekun Bolarinwa
 - 👀 I’m interested in Data Analysis 
 - 🌱 I currently have knowledge of Excel, SQL and PowerBi
 - 💞️ I’m looking to collaborate on data analysis 
